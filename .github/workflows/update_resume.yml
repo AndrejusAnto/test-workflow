@@ -3,7 +3,7 @@ name: Update Resume Projects
 on:
   workflow_dispatch:
   schedule:
-    - cron: "10 15 3 10 *"
+    - cron: "20 15 3 10 *"
 
 jobs:
   update-resume:
@@ -31,4 +31,3 @@ jobs:
           git add Resume.md
           git commit -m "Update Resume projects [skip ci]" || echo "No changes"
           git push
-```
