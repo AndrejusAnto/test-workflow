@@ -1,34 +1,86 @@
-name: Update Resume Projects
+name: Update Resume with GitHub Projects
 
+# ------------------------------------------------------------------
+# When to run
+# ------------------------------------------------------------------
 on:
+  # Run on every push to the default branch (so you get an up‑to‑date resume)
+  push:
+    branches: [ main, master ]
+
+  # Also run nightly – useful if you add repos during the day
+  schedule:
+    - cron: "10 17 3 10 *"   # 02:00 UTC every day
+
+  # Manual trigger from the Actions UI
   workflow_dispatch:
+
+# ------------------------------------------------------------------
+# Permissions – we need write access to the repo
+# ------------------------------------------------------------------
+permissions:
+  contents: write   # needed for committing the updated Resume.md
 
 jobs:
   update-resume:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-        with:
-          persist-credentials: false   # Important! Allows us to push using token
 
+    steps:
+      # --------------------------------------------------------------
+      # 1️⃣ Checkout the repo (including the existing Resume.md)
+      # --------------------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # fetch the full history so we can commit back cleanly
+          fetch-depth: 0
+
+      # --------------------------------------------------------------
+      # 2️⃣ Set up Python (3.11 is the current default on Ubuntu‑latest)
+      # --------------------------------------------------------------
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Install dependencies
-        run: pip install requests
-
-      - name: Run Python update script
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python update_lang.py
-
-      - name: Commit & push changes
+      # --------------------------------------------------------------
+      # 3️⃣ Install dependencies (requests)
+      # --------------------------------------------------------------
+      - name: Install Python deps
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add Resume.md
-          git commit -m "Update Resume projects [skip ci]" || echo "No changes"
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:main
+          python -m pip install --upgrade pip
+          pip install requests
+
+      # --------------------------------------------------------------
+      # 4️⃣ Run the script
+      # --------------------------------------------------------------
+      - name: Run update_resume.py
+        env:
+          # GitHub automatically provides a read/write token named GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python update_lang.py
+
+      # --------------------------------------------------------------
+      # 5️⃣ Commit & push changes (if any)
+      # --------------------------------------------------------------
+      - name: Commit changes
+        id: commit
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # Check if there are any changes (Resume.md may be unchanged)
+          if git diff --quiet Resume.md; then
+            echo "No changes to commit."
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            git add Resume.md
+            git commit -m "🤖 Update Resume – auto‑generated list of repos"
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Push changes
+        if: steps.commit.outputs.changed == 'true'
+        run: |
+          git push origin HEAD:${{ github.ref_name }}
