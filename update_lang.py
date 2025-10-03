@@ -30,7 +30,7 @@ def fetch_repos(username):
         lang = repo["language"]
         if lang in LANG_MAP:
             category = LANG_MAP[lang]
-            repos_by_lang[category].append((repo["name"], repo["html_url"]))
+            repos_by_lang[category].append((repo["name"], repo["html_url"]), lang)
 
     return repos_by_lang
 
@@ -52,8 +52,8 @@ def update_resume(repos_by_lang):
             updated_lines.append(line)
             if current_lang:
                 # Insert the new repo list for this language
-                for name, url in repos_by_lang[current_lang]:
-                    updated_lines.append(f"- [{name}]({url}) ({current_lang})\n")
+                for name, url, lang in repos_by_lang[current_lang]:
+                    updated_lines.append(f"- [{name}]({url}) ({lang})\n")
                 updated_lines.append("\n")
             continue
 
