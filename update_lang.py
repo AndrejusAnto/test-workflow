@@ -1,4 +1,3 @@
-```python
 import os
 import requests
 
@@ -44,4 +43,3 @@ def update_resume(repos):
 if __name__ == "__main__":
     repos = fetch_repos(USERNAME, LANGUAGES)
     update_resume(repos)
-```
