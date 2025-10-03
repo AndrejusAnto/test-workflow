@@ -23,7 +23,7 @@ jobs:
       - name: Run Python update script
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python update_resume.py
+        run: python update_lang.py
 
       - name: Commit & push changes
         run: |
