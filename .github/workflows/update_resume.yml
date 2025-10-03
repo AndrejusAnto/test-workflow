@@ -2,27 +2,28 @@ name: Update Resume Projects
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "40 15 3 10 *"
 
 jobs:
   update-resume:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false   # Important! Allows us to push using token
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.11"
 
-      - name: Install requests
+      - name: Install dependencies
         run: pip install requests
 
-      - name: Run update script
+      - name: Run Python update script
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python update_lang.py
+        run: python update_resume.py
 
       - name: Commit & push changes
         run: |
