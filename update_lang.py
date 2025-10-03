@@ -53,7 +53,7 @@ def update_resume(repos_by_lang):
             if current_lang:
                 # Insert the new repo list for this language
                 for name, url in repos_by_lang[current_lang]:
-                    updated_lines.append(f"- [{name}]({url})({lang_name})\n")
+                    updated_lines.append(f"- [{name}]({url}) ({current_lang})\n")
                 updated_lines.append("\n")
             continue
 
