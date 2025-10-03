@@ -11,7 +11,7 @@ LANGUAGES = ["Python", "Jupyter Notebook", "C"]
 TOKEN = os.getenv("GITHUB_TOKEN")
 
 # Resume file path
-RESUME_FILE = "README.md"
+RESUME_FILE = "Resume.md"
 
 def fetch_repos(username, languages):
     repos = []
