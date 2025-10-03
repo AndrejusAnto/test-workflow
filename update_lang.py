@@ -30,7 +30,7 @@ def fetch_repos(username):
         lang = repo["language"]
         if lang in LANG_MAP:
             category = LANG_MAP[lang]
-            repos_by_lang[category].append((repo["name"], repo["html_url"]), lang)
+            repos_by_lang[category].append((repo["name"], repo["html_url"], lang))
 
     return repos_by_lang
 
