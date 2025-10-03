@@ -3,7 +3,7 @@ name: Update Resume Projects
 on:
   workflow_dispatch:
   schedule:
-    - cron: "20 15 3 10 *"
+    - cron: "30 15 3 10 *"
 
 jobs:
   update-resume:
